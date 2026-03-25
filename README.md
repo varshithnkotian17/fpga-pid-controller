@@ -65,6 +65,12 @@ xelab tb_pid_controller -debug off -s sim_snapshot
 xsim sim_snapshot -runall
 ```
 
+## Hardware Results
+
+Step response captured from KC705 hardware via Python monitor:
+
+![Hardware Step Response](docs/hardware_step_response.png)
+
 ## Quick Start
 
 ### 1. Build the Vivado project
