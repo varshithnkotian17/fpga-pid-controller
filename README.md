@@ -53,6 +53,8 @@ All four testbench cases pass using Vivado xsim:
 --- Test 4: Saturation (out_max=5, SP=100) --- Out = 5.000   PASSED
 ```
 
+![Step Response](docs/step_response.png)
+
 To run simulation:
 
 ```bash
