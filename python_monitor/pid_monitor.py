@@ -74,35 +74,36 @@ class PIDMonitor:
         self.ser.reset_input_buffer()
         self.send_raw("demo")
         
-        data = {"tick": [], "pv": [], "error": [], "output": []}
-        
-        capturing = False
+        data = {"tick": [], "setpoint": [], "pv": [], "error": [], "output": []}
+
         timeout = time.time() + 30  # 30 second timeout
-        
+
         while time.time() < timeout:
             line = self.read_line()
             if not line:
                 continue
-                
+
             if "Demo complete" in line:
                 break
-            
-            # Try to parse CSV data
+
+            # Parse CSV: Tick,Setpoint,PV,Error,Output (5 columns)
             parts = line.split(',')
-            if len(parts) == 4:
+            if len(parts) == 5:
                 try:
                     tick = int(parts[0])
-                    pv   = q16_to_float(int(parts[1]))
-                    err  = q16_to_float(int(parts[2]))
-                    out  = q16_to_float(int(parts[3]))
-                    
+                    sp   = q16_to_float(int(parts[1]))
+                    pv   = q16_to_float(int(parts[2]))
+                    err  = q16_to_float(int(parts[3]))
+                    out  = q16_to_float(int(parts[4]))
+
                     data["tick"].append(tick)
+                    data["setpoint"].append(sp)
                     data["pv"].append(pv)
                     data["error"].append(err)
                     data["output"].append(out)
-                    
+
                     # Print progress
-                    print(f"  Tick {tick:6d} | PV={pv:8.3f} | Error={err:8.3f} | Out={out:8.3f}")
+                    print(f"  Tick {tick:6d} | SP={sp:8.3f} | PV={pv:8.3f} | Err={err:8.3f} | Out={out:8.3f}")
                 except ValueError:
                     pass
             else:
@@ -125,8 +126,10 @@ def plot_step_response(data):
     
     x = range(len(data["pv"]))
     
-    # Process Variable
+    # Process Variable + Setpoint
     ax1.plot(x, data["pv"], 'b-', linewidth=1.5, label='Process Variable')
+    if data.get("setpoint"):
+        ax1.plot(x, data["setpoint"], 'k--', linewidth=1.0, alpha=0.7, label='Setpoint')
     ax1.set_ylabel('PV (Q16.16)')
     ax1.legend()
     ax1.grid(True, alpha=0.3)

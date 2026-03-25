@@ -272,17 +272,18 @@ void cmd_demo(void) {
 
     /* Step to 10.0 */
     xil_printf("Stepping to SP=10.0\r\n");
-    xil_printf("Tick,PV,Error,Output\r\n");
+    xil_printf("Tick,Setpoint,PV,Error,Output\r\n");
     pid_write(PID_SETPOINT, (10 << 16));  /* SP = 10.0 */
 
     for (int i = 0; i < 100; i++) {
+        int32_t sp  = (int32_t)pid_read(PID_SETPOINT);
         int32_t pv  = (int32_t)pid_read(PID_PROCVAR);
         int32_t err = (int32_t)pid_read(PID_ERROR);
         int32_t out = (int32_t)pid_read(PID_OUTPUT);
         uint32_t tc = pid_read(PID_TICKCNT);
 
-        xil_printf("%u,%d,%d,%d\r\n",
-            (unsigned)tc, (int)pv, (int)err, (int)out);
+        xil_printf("%u,%d,%d,%d,%d\r\n",
+            (unsigned)tc, (int)sp, (int)pv, (int)err, (int)out);
         usleep(20000);
     }
 
@@ -291,13 +292,14 @@ void cmd_demo(void) {
     pid_write(PID_SETPOINT, (uint32_t)(-(5 << 16)));  /* SP = -5.0 */
 
     for (int i = 0; i < 100; i++) {
+        int32_t sp  = (int32_t)pid_read(PID_SETPOINT);
         int32_t pv  = (int32_t)pid_read(PID_PROCVAR);
         int32_t err = (int32_t)pid_read(PID_ERROR);
         int32_t out = (int32_t)pid_read(PID_OUTPUT);
         uint32_t tc = pid_read(PID_TICKCNT);
 
-        xil_printf("%u,%d,%d,%d\r\n",
-            (unsigned)tc, (int)pv, (int)err, (int)out);
+        xil_printf("%u,%d,%d,%d,%d\r\n",
+            (unsigned)tc, (int)sp, (int)pv, (int)err, (int)out);
         usleep(20000);
     }
 
